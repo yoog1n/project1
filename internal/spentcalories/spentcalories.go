@@ -30,9 +30,16 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, err
 	}
 
+	if steps <= 0 {
+		return 0, "", 0, fmt.Errorf("шаги должны быть больше 0")
+	}
+
 	duration, err := time.ParseDuration(parts[2])
 	if err != nil {
 		return 0, "", 0, err
+	}
+	if duration <= 0 {
+		return 0, "", 0, fmt.Errorf("время тртенировки должно быть больше 0")
 	}
 
 	return steps, parts[1], duration, nil
@@ -68,6 +75,8 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		return "", err
 	}
 
+	tmplMsg := "Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n"
+
 	switch trainingType {
 	case "Бег":
 		distanceKm := distance(steps, height)
@@ -85,7 +94,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		}
 
 		return fmt.Sprintf(
-			"Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
+			tmplMsg,
 			trainingType,
 			duration.Hours(),
 			distanceKm,
@@ -109,7 +118,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		}
 
 		return fmt.Sprintf(
-			"Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
+			tmplMsg,
 			trainingType,
 			duration.Hours(),
 			distanceKm,
@@ -118,7 +127,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		), nil
 
 	default:
-		return "", fmt.Errorf("ошибка")
+		return "", fmt.Errorf("неизвестный тип тренировки: %s", trainingType)
 	}
 }
 
